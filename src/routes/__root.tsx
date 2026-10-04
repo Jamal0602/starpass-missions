@@ -39,7 +39,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    const msg = String(error?.message ?? "");
+    const msg = String((error as Error | undefined)?.message ?? "");
     if (/Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(msg)) {
       const KEY = "astra-chunk-reload";
       const last = Number(sessionStorage.getItem(KEY) ?? 0);
