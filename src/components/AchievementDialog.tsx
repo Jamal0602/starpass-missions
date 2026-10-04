@@ -9,8 +9,8 @@ export function AchievementDialog({
   onClose,
 }: {
   day: number | null;
-  title?: string;
-  badgeUrl?: string | null;
+  title?: string | undefined;
+  badgeUrl?: string | null | undefined;
   onClose: () => void;
 }) {
   return (

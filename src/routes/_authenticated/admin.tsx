@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { AdminKeysPanel, AdminChallengePanel } from "@/components/AdminKeysPanel";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -97,6 +98,8 @@ function Console() {
         </div>
       </section>
 
+      <AdminKeysPanel />
+      <AdminChallengePanel />
       <section className="rounded-2xl border bg-card p-5">
         <h2 className="font-semibold">Direct Stamp Injector</h2>
         <form onSubmit={grant} className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">

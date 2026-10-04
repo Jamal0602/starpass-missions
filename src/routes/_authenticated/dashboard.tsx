@@ -109,7 +109,7 @@ function Dashboard() {
               <>
                 Mission {String(current.mission_day).padStart(2, "0")}
                 <br />
-                <span className="text-primary">{current.title}</span>
+                <span className="text-primary">{current.title.replace(/^Mission\s*\d+\s*:\s*/i, "")}</span>
               </>
             ) : (
               "All missions complete"
