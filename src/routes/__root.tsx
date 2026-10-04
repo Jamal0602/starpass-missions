@@ -118,6 +118,39 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // After a new version is published, an open tab may request page files that no
+  // longer exist. Reload once to pick up the latest version instead of a blank screen.
+  useEffect(() => {
+    const KEY = "astra-chunk-reload";
+    const isStale = (msg: string) =>
+      /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(msg);
+    const reload = () => {
+      const last = Number(sessionStorage.getItem(KEY) ?? 0);
+      if (Date.now() - last < 10_000) return; // avoid reload loops
+      sessionStorage.setItem(KEY, String(Date.now()));
+      window.location.reload();
+    };
+    const onPreload = (e: Event) => {
+      e.preventDefault();
+      reload();
+    };
+    const onRejection = (e: PromiseRejectionEvent) => {
+      if (isStale(String(e.reason?.message ?? e.reason))) reload();
+    };
+    const onError = (e: ErrorEvent) => {
+      if (isStale(e.message ?? "")) reload();
+    };
+    window.addEventListener("vite:preloadError", onPreload);
+    window.addEventListener("unhandledrejection", onRejection);
+    window.addEventListener("error", onError);
+    return () => {
+      window.removeEventListener("vite:preloadError", onPreload);
+      window.removeEventListener("unhandledrejection", onRejection);
+      window.removeEventListener("error", onError);
+    };
+  }, []);
+
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
