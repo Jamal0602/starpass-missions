@@ -246,6 +246,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activity_counts: {
+        Args: never
+        Returns: {
+          profile_id: string
+          total: number
+        }[]
+      }
       admin_grant_stamp: {
         Args: { _day: number; _passport_id: string }
         Returns: undefined
