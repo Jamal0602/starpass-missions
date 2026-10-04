@@ -24,11 +24,13 @@ export function StampTile({
   theme,
   state,
   compact,
+  badgeUrl,
 }: {
   day: number;
   theme: string;
   state: StampState;
   compact?: boolean;
+  badgeUrl?: string | null;
 }) {
   const Icon = state === "stamped" ? Check : state === "missed" ? X : state === "locked" ? Lock : Clock;
   return (
