@@ -1,14 +1,15 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Rocket, ClipboardList, Trophy, IdCard, Newspaper, ShieldCheck, LogOut } from "lucide-react";
+import { Rocket, Code2, Home, ClipboardList, Trophy, IdCard, Newspaper, ShieldCheck, LogOut } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/use-me";
 import { istNowParts } from "@/lib/mission";
 
 const NAV = [
-  { to: "/dashboard", label: "Missions", icon: Rocket },
-  { to: "/activities", label: "Activities", icon: ClipboardList },
+  { to: "/dashboard", label: "Deck", icon: Home },
+  { to: "/missions", label: "Missions", icon: ClipboardList },
+  { to: "/activities", label: "Arena", icon: Code2 },
   { to: "/leaderboard", label: "Ranks", icon: Trophy },
   { to: "/profile", label: "Passport", icon: IdCard },
 ] as const;
@@ -93,7 +94,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main className="mx-auto max-w-6xl px-4 py-4 md:px-6 md:py-8">{children}</main>
 
-      <nav className="glass fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t md:hidden">
+      <nav className="glass fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t md:hidden">
         {NAV.map((n) => (
           <Link
             key={n.to}
