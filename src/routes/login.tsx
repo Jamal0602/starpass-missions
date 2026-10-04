@@ -109,13 +109,9 @@ function LoginPage() {
           {busy ? "Verifying…" : "Board Mission"}
         </Button>
         <div className="flex justify-between text-sm">
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground"
-            onClick={() => (passport ? setMode("forgot") : toast.error("Enter your Passport ID first"))}
-          >
+          <Link to="/forgot-password" className="text-muted-foreground hover:text-foreground">
             Forgot password?
-          </button>
+          </Link>
           <Link to="/register" className="text-primary">
             Enlist as trainee
           </Link>
