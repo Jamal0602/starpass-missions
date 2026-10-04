@@ -15,8 +15,8 @@ const IST_OFFSET = 5.5 * 3600 * 1000;
 
 /** Convert an IST date (YYYY-MM-DD) + time (HH:MM[:SS]) into a UTC epoch ms. */
 export function istToEpoch(date: string, time: string) {
-  const [y, m, d] = date.split("-").map(Number);
-  const [h, mi, s = 0] = time.split(":").map(Number);
+  const [y = 0, m = 1, d = 1] = date.split("-").map(Number);
+  const [h = 0, mi = 0, s = 0] = time.split(":").map(Number);
   return Date.UTC(y, m - 1, d, h, mi, s) - IST_OFFSET;
 }
 
