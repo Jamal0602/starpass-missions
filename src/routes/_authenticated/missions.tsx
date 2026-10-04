@@ -9,7 +9,7 @@ import { istNowParts } from "@/lib/mission";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-export const Route = createFileRoute("/_authenticated/activities")({
+export const Route = createFileRoute("/_authenticated/missions")({
   head: () => ({
     meta: [
       { title: "Mission Operations — AstraPass" },
@@ -18,10 +18,10 @@ export const Route = createFileRoute("/_authenticated/activities")({
       { property: "og:description", content: "Complete each day's space mission log during World Space Week." },
     ],
   }),
-  component: ActivitiesPage,
+  component: MissionsPage,
 });
 
-function ActivitiesPage() {
+function MissionsPage() {
   const qc = useQueryClient();
   const { data: me } = useMe();
   const { data: schedule = [] } = useSchedule();
