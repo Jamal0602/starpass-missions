@@ -128,7 +128,7 @@ function ProfilePage() {
           <div className="mb-3 font-mono text-xs tracking-widest text-muted-foreground">STAMP MATRIX</div>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
             {schedule.map((s) => (
-              <StampTile key={s.mission_day} compact day={s.mission_day} theme={s.theme} state={stampState(s, stamped.has(s.mission_day))} />
+              <StampTile key={s.mission_day} compact day={s.mission_day} theme={s.theme} state={stampState(s, stamped.has(s.mission_day))} badgeUrl={s.badge_url} />
             ))}
           </div>
         </div>
