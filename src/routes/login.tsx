@@ -55,7 +55,7 @@ function LoginPage() {
       if (st.status === "needs_activation") return void setMode("activate");
       await finish(await login({ data: { passport_id: id, password } }));
     } catch {
-      toast.error("Check your Passport ID format (SP-2026-XXXX)");
+      toast.error("Check your Passport ID format (e.g. SW26-SE-0001)");
     } finally {
       setBusy(false);
     }
@@ -94,7 +94,7 @@ function LoginPage() {
           <Label htmlFor="pid">Passport ID</Label>
           <Input
             id="pid"
-            placeholder="SP-2026-1001"
+            placeholder="SW26-SE-0001"
             className="font-mono uppercase"
             value={passport}
             onChange={(e) => setPassport(e.target.value)}
@@ -109,13 +109,9 @@ function LoginPage() {
           {busy ? "Verifying…" : "Board Mission"}
         </Button>
         <div className="flex justify-between text-sm">
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground"
-            onClick={() => (passport ? setMode("forgot") : toast.error("Enter your Passport ID first"))}
-          >
+          <Link to="/forgot-password" className="text-muted-foreground hover:text-foreground">
             Forgot password?
-          </button>
+          </Link>
           <Link to="/register" className="text-primary">
             Enlist as trainee
           </Link>

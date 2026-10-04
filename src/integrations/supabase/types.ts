@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_submissions: {
+        Row: {
+          created_at: string
+          id: string
+          mission_day: number
+          profile_id: string
+          response: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mission_day: number
+          profile_id: string
+          response: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mission_day?: number
+          profile_id?: string
+          response?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_submissions_mission_day_fkey"
+            columns: ["mission_day"]
+            isOneToOne: false
+            referencedRelation: "mission_schedules"
+            referencedColumns: ["mission_day"]
+          },
+          {
+            foreignKeyName: "activity_submissions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collected_badges: {
         Row: {
           claim_speed_seconds: number | null
@@ -91,6 +130,41 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      posts: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          link_url: string | null
+          profile_id: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          link_url?: string | null
+          profile_id: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          link_url?: string | null
+          profile_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -172,6 +246,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activity_counts: {
+        Args: never
+        Returns: {
+          profile_id: string
+          total: number
+        }[]
+      }
       admin_grant_stamp: {
         Args: { _day: number; _passport_id: string }
         Returns: undefined
@@ -199,6 +280,22 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      submit_activity: {
+        Args: { _day: number; _response: string }
+        Returns: {
+          created_at: string
+          id: string
+          mission_day: number
+          profile_id: string
+          response: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "activity_submissions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {

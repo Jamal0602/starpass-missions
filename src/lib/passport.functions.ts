@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const passportSchema = z.string().trim().toUpperCase().regex(/^SP-2026-\d{4,}$/, "Invalid Passport ID");
+const passportSchema = z.string().trim().toUpperCase().regex(/^(SP-2026-\d{4,}|SW26-[A-Z]{2}-\d{4,})$/, "Invalid Passport ID");
 const passwordSchema = z.string().min(8, "Password must be at least 8 characters").max(72);
 const digits = (s: string) => s.replace(/\D/g, "").slice(-10);
 

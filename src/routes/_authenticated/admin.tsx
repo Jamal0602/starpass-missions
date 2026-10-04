@@ -102,7 +102,7 @@ function Console() {
         <form onSubmit={grant} className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-1">
             <Label>Passport ID</Label>
-            <Input value={pid} onChange={(e) => setPid(e.target.value)} placeholder="SP-2026-1001" className="font-mono uppercase" required />
+            <Input value={pid} onChange={(e) => setPid(e.target.value)} placeholder="SW26-SE-0001" className="font-mono uppercase" required />
           </div>
           <div className="space-y-1">
             <Label>Day</Label>
