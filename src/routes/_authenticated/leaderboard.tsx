@@ -34,7 +34,7 @@ function LeaderboardPage() {
       const [p, b, a] = await Promise.all([
         supabase.from("profiles").select("id, passport_id, full_name, callsign, avatar_url, skills, is_pro"),
         supabase.from("collected_badges").select("profile_id, claim_speed_seconds"),
-        supabase.from("activity_submissions").select("profile_id"),
+        supabase.rpc("activity_counts"),
       ]);
       if (p.error) throw p.error;
       return { profiles: p.data, badges: b.data ?? [], subs: a.data ?? [] };
@@ -48,7 +48,7 @@ function LeaderboardPage() {
         const mine = data.badges.filter((x) => x.profile_id === p.id);
         const stamps = mine.length;
         const speed = mine.reduce((s, x) => s + (x.claim_speed_seconds ?? 5400), 0);
-        const acts = data.subs.filter((x) => x.profile_id === p.id).length;
+        const acts = data.subs.find((x) => x.profile_id === p.id)?.total ?? 0;
         const skills = p.skills?.length ?? 0;
         const score = stamps * 100 + acts * 50 + Math.min(skills, 10) * 10 + (p.is_pro ? 25 : 0);
         const val = { master: score, badges: stamps, activities: acts, skills }[tab];
