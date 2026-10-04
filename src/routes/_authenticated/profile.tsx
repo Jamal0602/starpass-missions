@@ -110,6 +110,7 @@ function ProfilePage() {
               <div className="text-xs uppercase tracking-widest text-muted-foreground">Passport ID</div>
               <div className="font-mono text-xl font-bold text-primary">{p.passport_id}</div>
             </div>
+            <ProfileScore profileId={p.id} />
             {p.skills.length > 0 && (
               <div className="flex flex-wrap gap-1 pt-1">
                 {p.skills.map((s) => (
@@ -201,6 +202,26 @@ function ProfilePage() {
           </form>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function ProfileScore({ profileId }: { profileId: string }) {
+  const { data } = useQuery({
+    queryKey: ["scores", "mine", profileId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("profile_scores");
+      if (error) throw error;
+      return data.find((r) => r.profile_id === profileId) ?? null;
+    },
+  });
+  return (
+    <div>
+      <div className="text-xs uppercase tracking-widest text-muted-foreground">Profile score</div>
+      <div className="font-mono text-2xl font-bold text-primary">{data?.score ?? 0}</div>
+      <div className="font-mono text-[11px] text-muted-foreground">
+        {data?.stamps ?? 0} badges · {data?.missions ?? 0} logs · {data?.solved ?? 0} solved
+      </div>
     </div>
   );
 }
