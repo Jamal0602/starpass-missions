@@ -24,7 +24,7 @@ function ClaimPage() {
   const { token } = Route.useParams();
   const qc = useQueryClient();
   const { data: schedule = [] } = useSchedule();
-  const [state, setState] = useState<{ status: "loading" | "ok" | "error"; error?: string; day?: number }>({ status: "loading" });
+  const [state, setState] = useState<{ status: "loading" | "ok" | "error"; error?: string | undefined; day?: number | undefined }>({ status: "loading" });
   const [popup, setPopup] = useState<number | null>(null);
   const ran = useRef(false);
 
@@ -33,7 +33,7 @@ function ClaimPage() {
     ran.current = true;
     (async () => {
       const { data, error } = await supabase.rpc("claim_badge_by_token", { _token: token.slice(0, 64) });
-      const r = (data ?? {}) as { ok?: boolean; error?: string; day?: number };
+      const r = (data ?? {}) as { ok?: boolean; error?: string | undefined; day?: number | undefined };
       if (error || !r.ok) return setState({ status: "error", error: r.error ?? "Could not claim badge" });
       playStamp();
       setState({ status: "ok", day: r.day });
