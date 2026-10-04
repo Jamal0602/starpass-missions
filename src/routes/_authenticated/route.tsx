@@ -4,9 +4,16 @@ import { AppShell } from "@/components/AppShell";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/login" });
+    if (error || !data.user) {
+      try {
+        sessionStorage.setItem("astra-next", location.href);
+      } catch {
+        /* storage unavailable */
+      }
+      throw redirect({ to: "/login" });
+    }
     return { user: data.user };
   },
   component: () => (

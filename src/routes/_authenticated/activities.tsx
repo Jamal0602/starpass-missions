@@ -1,87 +1,146 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Lock } from "lucide-react";
+import { CheckCircle2, Circle, XCircle, Code2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useMe, useSchedule } from "@/hooks/use-me";
-import { istNowParts } from "@/lib/mission";
+import { useMe } from "@/hooks/use-me";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/activities")({
   head: () => ({
     meta: [
-      { title: "Mission Operations — AstraPass" },
-      { name: "description", content: "Complete each day's space mission log during World Space Week." },
-      { property: "og:title", content: "Mission Operations — AstraPass" },
-      { property: "og:description", content: "Complete each day's space mission log during World Space Week." },
+      { title: "Activity Arena — AstraPass" },
+      { name: "description", content: "Solve space quiz challenges to boost your profile score." },
+      { property: "og:title", content: "Activity Arena — AstraPass" },
+      { property: "og:description", content: "Solve space quiz challenges to boost your profile score." },
     ],
   }),
   component: ActivitiesPage,
 });
 
+const DIFF: Record<string, string> = { easy: "text-primary", medium: "text-accent-foreground", hard: "text-destructive" };
+
 function ActivitiesPage() {
   const qc = useQueryClient();
   const { data: me } = useMe();
-  const { data: schedule = [] } = useSchedule();
   const pid = me?.profile?.id;
-  const { data: subs = [] } = useQuery({
-    queryKey: ["my-subs", pid],
+  const [filter, setFilter] = useState<"all" | "easy" | "medium" | "hard">("all");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [choice, setChoice] = useState<number | null>(null);
+  const [result, setResult] = useState<{ correct: boolean; correct_index: number } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const { data } = useQuery({
+    queryKey: ["challenges", pid],
     enabled: !!pid,
     queryFn: async () => {
-      const { data, error } = await supabase.from("activity_submissions").select("mission_day, response, created_at").eq("profile_id", pid!);
-      if (error) throw error;
-      return data;
+      const [c, a] = await Promise.all([
+        supabase.from("challenges").select("id, title, question, options, category, difficulty, points").eq("is_active", true).order("created_at"),
+        supabase.from("challenge_attempts").select("challenge_id, is_correct, selected_index, points_awarded").eq("profile_id", pid!),
+      ]);
+      if (c.error) throw c.error;
+      return { list: c.data, attempts: a.data ?? [] };
     },
   });
-  const [drafts, setDrafts] = useState<Record<number, string>>({});
-  const [busy, setBusy] = useState<number | null>(null);
-  const today = istNowParts().date;
 
-  async function submit(day: number) {
-    const text = (drafts[day] ?? "").trim();
-    if (text.length < 10) return void toast.error("Write at least 10 characters");
-    setBusy(day);
-    const { error } = await supabase.rpc("submit_activity", { _day: day, _response: text.slice(0, 2000) });
-    setBusy(null);
+  const list = useMemo(() => (data?.list ?? []).filter((c) => filter === "all" || c.difficulty === filter), [data, filter]);
+  const attempts = new Map((data?.attempts ?? []).map((a) => [a.challenge_id, a]));
+  const solved = (data?.attempts ?? []).filter((a) => a.is_correct).length;
+  const pts = (data?.attempts ?? []).reduce((s, a) => s + a.points_awarded, 0);
+  const open = data?.list.find((c) => c.id === openId);
+  const prior = open ? attempts.get(open.id) : undefined;
+
+  async function submit() {
+    if (!open || choice === null) return;
+    setBusy(true);
+    const { data: r, error } = await supabase.rpc("submit_challenge", { _id: open.id, _choice: choice });
+    setBusy(false);
     if (error) return void toast.error(error.message);
-    toast.success("Mission log transmitted");
-    qc.invalidateQueries({ queryKey: ["my-subs"] });
-    qc.invalidateQueries({ queryKey: ["leaderboard"] });
+    const res = r as { correct: boolean; correct_index: number; points: number };
+    setResult(res);
+    res.correct ? toast.success(`Accepted · +${res.points} pts`) : toast.error("Wrong answer");
+    qc.invalidateQueries({ queryKey: ["challenges"] });
+    qc.invalidateQueries({ queryKey: ["scores"] });
+  }
+
+  function pick(id: string) {
+    setOpenId(id);
+    setChoice(null);
+    setResult(null);
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4 p-4 pb-28">
-      <h1 className="font-mono text-xl font-bold tracking-widest text-primary">MISSION OPERATIONS</h1>
-      <p className="text-sm text-muted-foreground">Each mission log opens only on its own day (IST). Share what you learned or built.</p>
-      {schedule.map((s) => {
-        const done = subs.find((x) => x.mission_day === s.mission_day);
-        const open = s.is_force_open || s.active_date === today;
-        return (
-          <div key={s.mission_day} className="rounded-xl border border-border bg-card p-4">
-            <div className="flex items-center gap-3">
-              {s.badge_url && <img src={s.badge_url} alt="" className="h-12 w-12" loading="lazy" />}
-              <div className="flex-1">
-                <div className="font-mono text-xs text-muted-foreground">MISSION 0{s.mission_day} · {s.active_date}</div>
-                <div className="font-semibold">{s.title}</div>
-                <div className="text-xs text-muted-foreground">{s.theme}</div>
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="flex items-center gap-2 font-mono text-xl font-bold tracking-widest text-primary"><Code2 className="h-5 w-5" /> ACTIVITY ARENA</h1>
+          <p className="text-sm text-muted-foreground">One attempt per problem. Correct answers add points to your profile score.</p>
+        </div>
+        <div className="flex gap-4 font-mono text-sm">
+          <span>Solved <b className="text-primary">{solved}/{data?.list.length ?? 0}</b></span>
+          <span>Points <b className="text-primary">{pts}</b></span>
+        </div>
+      </div>
+
+      <div className="flex gap-1">
+        {(["all", "easy", "medium", "hard"] as const).map((f) => (
+          <button key={f} onClick={() => setFilter(f)} className={`rounded-md px-3 py-1.5 text-xs font-semibold capitalize ${filter === f ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>{f}</button>
+        ))}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
+        <ol className="divide-y overflow-hidden rounded-xl border bg-card">
+          {list.map((c, i) => {
+            const a = attempts.get(c.id);
+            return (
+              <li key={c.id}>
+                <button onClick={() => pick(c.id)} className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-secondary ${openId === c.id ? "bg-secondary" : ""}`}>
+                  {a ? (a.is_correct ? <CheckCircle2 className="h-4 w-4 text-primary" /> : <XCircle className="h-4 w-4 text-destructive" />) : <Circle className="h-4 w-4 text-muted-foreground" />}
+                  <span className="w-6 font-mono text-muted-foreground">{i + 1}.</span>
+                  <span className="flex-1 truncate">{c.title}</span>
+                  <span className="hidden text-xs text-muted-foreground sm:inline">{c.category}</span>
+                  <span className={`w-14 text-right text-xs font-semibold capitalize ${DIFF[c.difficulty] ?? ""}`}>{c.difficulty}</span>
+                </button>
+              </li>
+            );
+          })}
+          {list.length === 0 && <li className="p-6 text-center text-sm text-muted-foreground">No challenges yet.</li>}
+        </ol>
+
+        <div className="rounded-xl border bg-card p-5">
+          {!open ? (
+            <p className="py-16 text-center text-sm text-muted-foreground">Select a problem to begin.</p>
+          ) : (
+            <div>
+              <div className="flex items-center gap-2 text-xs">
+                <span className={`font-semibold capitalize ${DIFF[open.difficulty] ?? ""}`}>{open.difficulty}</span>
+                <span className="text-muted-foreground">· {open.category} · {open.points} pts</span>
               </div>
-              {done ? <CheckCircle2 className="h-5 w-5 text-primary" /> : !open && <Lock className="h-4 w-4 text-muted-foreground" />}
+              <h2 className="mt-2 text-lg font-bold">{open.title}</h2>
+              <p className="mt-2 whitespace-pre-wrap text-sm">{open.question}</p>
+              <div className="mt-4 space-y-2">
+                {open.options.map((o, i) => {
+                  const done = prior || result;
+                  const sel = prior ? prior.selected_index === i : choice === i;
+                  const right = result?.correct_index === i;
+                  return (
+                    <button key={i} disabled={!!done} onClick={() => setChoice(i)}
+                      className={`w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors ${right ? "border-primary bg-primary/15" : sel ? (done && !(prior?.is_correct ?? result?.correct) ? "border-destructive bg-destructive/10" : "border-primary bg-primary/10") : "hover:bg-secondary"}`}>
+                      <span className="mr-2 font-mono text-muted-foreground">{String.fromCharCode(65 + i)}.</span>{o}
+                    </button>
+                  );
+                })}
+              </div>
+              {prior ? (
+                <p className={`mt-4 font-mono text-sm ${prior.is_correct ? "text-primary" : "text-destructive"}`}>{prior.is_correct ? `Accepted · +${prior.points_awarded}` : "Attempted · Wrong answer"}</p>
+              ) : !result && (
+                <Button className="mt-4" disabled={choice === null || busy} onClick={submit}>{busy ? "Submitting…" : "Submit"}</Button>
+              )}
             </div>
-            {done ? (
-              <p className="mt-3 whitespace-pre-wrap rounded-md bg-secondary p-3 text-sm">{done.response}</p>
-            ) : open ? (
-              <div className="mt-3 space-y-2">
-                <Textarea maxLength={2000} rows={4} placeholder="Your mission log…" value={drafts[s.mission_day] ?? ""} onChange={(e) => setDrafts({ ...drafts, [s.mission_day]: e.target.value })} />
-                <Button onClick={() => submit(s.mission_day)} disabled={busy === s.mission_day}>{busy === s.mission_day ? "Transmitting…" : "Submit log"}</Button>
-              </div>
-            ) : (
-              <p className="mt-2 text-xs text-muted-foreground">{s.active_date < today ? "Window closed." : "Opens on mission day."}</p>
-            )}
-          </div>
-        );
-      })}
+          )}
+        </div>
+      </div>
     </div>
   );
 }
