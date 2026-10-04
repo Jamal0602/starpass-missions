@@ -36,6 +36,13 @@
       "when": 1791095811647,
       "tag": "0004_restrict_submissions",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791099939218,
+      "tag": "0005_mission_pins_links_challenges_scores",
+      "breakpoints": true
     }
   ]
 }
