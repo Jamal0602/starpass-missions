@@ -19,7 +19,7 @@ export function SpaceAvatar({
   className?: string;
 }) {
   if (url) return <img src={url} alt="" className={cn("rounded-full object-cover", className)} />;
-  const Icon = ICONS[avatarIndex(passportId)];
+  const Icon = ICONS[avatarIndex(passportId)] ?? Rocket;
   return (
     <div
       className={cn(
