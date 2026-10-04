@@ -1,0 +1,1 @@
+ALTER TABLE public.mission_schedules ADD COLUMN badge_url text;

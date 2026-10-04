@@ -59,6 +59,7 @@ export type Database = {
       mission_schedules: {
         Row: {
           active_date: string
+          badge_url: string | null
           end_time: string
           is_force_closed: boolean
           is_force_open: boolean
@@ -69,6 +70,7 @@ export type Database = {
         }
         Insert: {
           active_date: string
+          badge_url?: string | null
           end_time?: string
           is_force_closed?: boolean
           is_force_open?: boolean
@@ -79,6 +81,7 @@ export type Database = {
         }
         Update: {
           active_date?: string
+          badge_url?: string | null
           end_time?: string
           is_force_closed?: boolean
           is_force_open?: boolean
@@ -94,6 +97,7 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           callsign: string | null
+          category: string | null
           created_at: string
           email: string
           full_name: string
@@ -111,6 +115,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           callsign?: string | null
+          category?: string | null
           created_at?: string
           email: string
           full_name: string
@@ -128,6 +133,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           callsign?: string | null
+          category?: string | null
           created_at?: string
           email?: string
           full_name?: string

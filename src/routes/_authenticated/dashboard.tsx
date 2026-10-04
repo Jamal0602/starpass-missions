@@ -149,7 +149,7 @@ function Dashboard() {
               onClick={() => claim(s.mission_day)}
               className="text-left disabled:cursor-default"
             >
-              <StampTile day={s.mission_day} theme={s.theme} state={state} />
+              <StampTile day={s.mission_day} theme={s.theme} state={state} badgeUrl={s.badge_url} />
             </button>
           ))}
         </div>

@@ -8,6 +8,20 @@
       "when": 1791094535178,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791095051380,
+      "tag": "0001_add_badge_url_to_schedules",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791095074359,
+      "tag": "0002_add_category_to_profiles",
+      "breakpoints": true
     }
   ]
 }
