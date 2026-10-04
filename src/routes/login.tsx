@@ -42,7 +42,16 @@ function LoginPage() {
       return;
     }
     await supabase.auth.setSession({ access_token: res.access_token, refresh_token: res.refresh_token! });
-    navigate({ to: "/dashboard" });
+    let next = "";
+    try {
+      next = sessionStorage.getItem("astra-next") ?? "";
+      sessionStorage.removeItem("astra-next");
+    } catch {
+      /* storage unavailable */
+    }
+    // Only allow same-origin relative paths (prevents open redirects)
+    if (next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login")) navigate({ href: next });
+    else navigate({ to: "/dashboard" });
   }
 
   async function onSubmit(e: React.FormEvent) {
