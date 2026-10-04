@@ -53,6 +53,110 @@ export type Database = {
           },
         ]
       }
+      challenge_attempts: {
+        Row: {
+          challenge_id: string
+          created_at: string
+          id: string
+          is_correct: boolean
+          points_awarded: number
+          profile_id: string
+          selected_index: number
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          points_awarded?: number
+          profile_id: string
+          selected_index: number
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          points_awarded?: number
+          profile_id?: string
+          selected_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_attempts_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_attempts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenge_keys: {
+        Row: {
+          challenge_id: string
+          correct_index: number
+        }
+        Insert: {
+          challenge_id: string
+          correct_index: number
+        }
+        Update: {
+          challenge_id?: string
+          correct_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_keys_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: true
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges: {
+        Row: {
+          category: string
+          created_at: string
+          difficulty: string
+          id: string
+          is_active: boolean
+          options: string[]
+          points: number
+          question: string
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          is_active?: boolean
+          options: string[]
+          points?: number
+          question: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          is_active?: boolean
+          options?: string[]
+          points?: number
+          question?: string
+          title?: string
+        }
+        Relationships: []
+      }
       collected_badges: {
         Row: {
           claim_speed_seconds: number | null
@@ -130,6 +234,64 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      mission_secrets: {
+        Row: {
+          claim_token: string
+          link_enabled: boolean
+          mission_day: number
+          pin: string | null
+          updated_at: string
+        }
+        Insert: {
+          claim_token?: string
+          link_enabled?: boolean
+          mission_day: number
+          pin?: string | null
+          updated_at?: string
+        }
+        Update: {
+          claim_token?: string
+          link_enabled?: boolean
+          mission_day?: number
+          pin?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_secrets_mission_day_fkey"
+            columns: ["mission_day"]
+            isOneToOne: true
+            referencedRelation: "mission_schedules"
+            referencedColumns: ["mission_day"]
+          },
+        ]
+      }
+      pin_attempts: {
+        Row: {
+          failures: number
+          mission_day: number
+          profile_id: string
+        }
+        Insert: {
+          failures?: number
+          mission_day: number
+          profile_id: string
+        }
+        Update: {
+          failures?: number
+          mission_day?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pin_attempts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posts: {
         Row: {
@@ -246,6 +408,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _window_open: {
+        Args: { s: Database["public"]["Tables"]["mission_schedules"]["Row"] }
+        Returns: boolean
+      }
       activity_counts: {
         Args: never
         Returns: {
@@ -257,6 +423,7 @@ export type Database = {
         Args: { _day: number; _passport_id: string }
         Returns: undefined
       }
+      admin_regenerate_token: { Args: { _day: number }; Returns: undefined }
       claim_badge: {
         Args: { _day: number }
         Returns: {
@@ -274,12 +441,28 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      claim_badge_by_token: { Args: { _token: string }; Returns: Json }
+      claim_badge_with_pin: {
+        Args: { _day: number; _pin: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      profile_scores: {
+        Args: never
+        Returns: {
+          challenge_points: number
+          missions: number
+          profile_id: string
+          score: number
+          solved: number
+          stamps: number
+        }[]
       }
       submit_activity: {
         Args: { _day: number; _response: string }
@@ -296,6 +479,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      submit_challenge: {
+        Args: { _choice: number; _id: string }
+        Returns: Json
       }
     }
     Enums: {
