@@ -48,9 +48,16 @@ export function StampTile({
         initial={state === "stamped" ? { scale: 2, rotate: -20, opacity: 0 } : false}
         animate={{ scale: 1, rotate: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 14 }}
-        className={cn("my-2 grid place-items-center rounded-full border-2 border-current", compact ? "h-8 w-8" : "h-12 w-12")}
+        className={cn(
+          "my-2 grid place-items-center overflow-hidden rounded-full border-2 border-current",
+          compact ? "h-8 w-8" : "h-12 w-12",
+        )}
       >
-        <Icon className={compact ? "h-4 w-4" : "h-6 w-6"} />
+        {badgeUrl && state === "stamped" ? (
+          <img src={badgeUrl} alt={`Day ${day} badge`} className="h-full w-full object-cover" />
+        ) : (
+          <Icon className={compact ? "h-4 w-4" : "h-6 w-6"} />
+        )}
       </motion.div>
       {!compact && <div className="line-clamp-1 text-xs text-foreground">{theme}</div>}
       <div className="mt-1 font-mono text-[10px] uppercase tracking-wider">{LABEL[state]}</div>
