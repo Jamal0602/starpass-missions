@@ -14,16 +14,189 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      collected_badges: {
+        Row: {
+          claim_speed_seconds: number | null
+          claimed_at: string
+          granted_by_admin: boolean
+          id: string
+          mission_day: number
+          profile_id: string
+        }
+        Insert: {
+          claim_speed_seconds?: number | null
+          claimed_at?: string
+          granted_by_admin?: boolean
+          id?: string
+          mission_day: number
+          profile_id: string
+        }
+        Update: {
+          claim_speed_seconds?: number | null
+          claimed_at?: string
+          granted_by_admin?: boolean
+          id?: string
+          mission_day?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collected_badges_mission_day_fkey"
+            columns: ["mission_day"]
+            isOneToOne: false
+            referencedRelation: "mission_schedules"
+            referencedColumns: ["mission_day"]
+          },
+          {
+            foreignKeyName: "collected_badges_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mission_schedules: {
+        Row: {
+          active_date: string
+          end_time: string
+          is_force_closed: boolean
+          is_force_open: boolean
+          mission_day: number
+          start_time: string
+          theme: string
+          title: string
+        }
+        Insert: {
+          active_date: string
+          end_time?: string
+          is_force_closed?: boolean
+          is_force_open?: boolean
+          mission_day: number
+          start_time?: string
+          theme: string
+          title: string
+        }
+        Update: {
+          active_date?: string
+          end_time?: string
+          is_force_closed?: boolean
+          is_force_open?: boolean
+          mission_day?: number
+          start_time?: string
+          theme?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          callsign: string | null
+          created_at: string
+          email: string
+          full_name: string
+          github_url: string | null
+          id: string
+          instagram_url: string | null
+          is_pro: boolean
+          linkedin_url: string | null
+          passport_id: string
+          phone_number: string
+          skills: string[]
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          callsign?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          github_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_pro?: boolean
+          linkedin_url?: string | null
+          passport_id?: string
+          phone_number: string
+          skills?: string[]
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          callsign?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          github_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_pro?: boolean
+          linkedin_url?: string | null
+          passport_id?: string
+          phone_number?: string
+          skills?: string[]
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_grant_stamp: {
+        Args: { _day: number; _passport_id: string }
+        Returns: undefined
+      }
+      claim_badge: {
+        Args: { _day: number }
+        Returns: {
+          claim_speed_seconds: number | null
+          claimed_at: string
+          granted_by_admin: boolean
+          id: string
+          mission_day: number
+          profile_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "collected_badges"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "trainee"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +323,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "trainee"],
+    },
   },
 } as const
