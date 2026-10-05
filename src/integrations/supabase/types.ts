@@ -199,6 +199,33 @@ export type Database = {
           },
         ]
       }
+      library_items: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          url: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+          url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
       mission_schedules: {
         Row: {
           active_date: string

@@ -43,6 +43,13 @@
       "when": 1791099939218,
       "tag": "0005_mission_pins_links_challenges_scores",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791195766161,
+      "tag": "0006_library_items",
+      "breakpoints": true
     }
   ]
 }
