@@ -26,6 +26,27 @@ async function admin() {
   return (await import("@/integrations/supabase/client.server")).supabaseAdmin;
 }
 
+type Admin = Awaited<ReturnType<typeof admin>>;
+
+// Create the login account, or reuse one that already exists for this email (fixes half-finished activations).
+async function ensureAuthUser(db: Admin, rawEmail: string, password: string): Promise<string | null> {
+  const email = rawEmail.trim().toLowerCase();
+  const { data: created, error } = await db.auth.admin.createUser({ email, password, email_confirm: true });
+  if (!error && created.user) return created.user.id;
+  for (let page = 1; page <= 20; page++) {
+    const { data } = await db.auth.admin.listUsers({ page, perPage: 200 });
+    const found = data?.users.find((u) => u.email?.toLowerCase() === email);
+    if (found) {
+      const { data: linked } = await db.from("profiles").select("id").eq("user_id", found.id).maybeSingle();
+      if (linked) return null;
+      await db.auth.admin.updateUserById(found.id, { password, email_confirm: true });
+      return found.id;
+    }
+    if (!data || data.users.length < 200) break;
+  }
+  return null;
+}
+
 async function signIn(email: string, password: string) {
   const { data, error } = await publicClient().auth.signInWithPassword({ email, password });
   if (error || !data.session) return { ok: false as const, error: "Invalid Passport ID or password" };
@@ -96,7 +117,7 @@ export const loginWithPassport = createServerFn({ method: "POST" })
       .eq("passport_id", data.passport_id)
       .maybeSingle();
     if (!p || !p.user_id) return { ok: false as const, error: "Invalid Passport ID or password" };
-    return signIn(p.email, data.password);
+    return signIn(p.email.trim().toLowerCase(), data.password);
   });
 
 export const activatePassport = createServerFn({ method: "POST" })
@@ -114,14 +135,10 @@ export const activatePassport = createServerFn({ method: "POST" })
       p && (p.email.toLowerCase() === data.contact.toLowerCase() || digits(p.phone_number) === digits(data.contact));
     if (!p || !matches || p.user_id) return { ok: false as const, error: "Details don't match our records" };
 
-    const { data: created, error } = await db.auth.admin.createUser({
-      email: p.email,
-      password: data.password,
-      email_confirm: true,
-    });
-    if (error || !created.user) return { ok: false as const, error: "Could not activate passport" };
-    await db.from("profiles").update({ user_id: created.user.id }).eq("id", p.id);
-    return signIn(p.email, data.password);
+    const userId = await ensureAuthUser(db, p.email, data.password);
+    if (!userId) return { ok: false as const, error: "Could not activate passport. Contact the admin." };
+    await db.from("profiles").update({ user_id: userId }).eq("id", p.id);
+    return signIn(p.email.toLowerCase(), data.password);
   });
 
 export const requestPasswordReset = createServerFn({ method: "POST" })
@@ -163,4 +180,66 @@ export const adminListParticipants = createServerFn({ method: "GET" })
       .select("id, passport_id, full_name, email, phone_number, user_id, is_pro, created_at, collected_badges(mission_day)")
       .order("created_at", { ascending: true });
     return data ?? [];
+  });
+
+async function assertAdmin(context: { supabase: any; userId: string }) {
+  const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+  if (!isAdmin) throw new Error("Forbidden");
+}
+
+export const adminSetPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ passport_id: passportSchema, password: passwordSchema }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const db = await admin();
+    const { data: p } = await db.from("profiles").select("id, email, user_id").eq("passport_id", data.passport_id).maybeSingle();
+    if (!p) return { ok: false as const, error: "Passport not found" };
+    if (p.user_id) {
+      const { error } = await db.auth.admin.updateUserById(p.user_id, { password: data.password });
+      if (error) return { ok: false as const, error: "Could not update password" };
+      return { ok: true as const };
+    }
+    const userId = await ensureAuthUser(db, p.email, data.password);
+    if (!userId) return { ok: false as const, error: "Could not create login" };
+    await db.from("profiles").update({ user_id: userId }).eq("id", p.id);
+    return { ok: true as const };
+  });
+
+export const adminUpdateContact = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({
+      passport_id: passportSchema,
+      full_name: z.string().trim().min(2).max(100),
+      email: z.string().trim().toLowerCase().email().max(255),
+      phone: z.string().trim().min(10).max(15),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const db = await admin();
+    const { data: p } = await db.from("profiles").select("id, user_id").eq("passport_id", data.passport_id).maybeSingle();
+    if (!p) return { ok: false as const, error: "Passport not found" };
+    if (p.user_id) {
+      const { error } = await db.auth.admin.updateUserById(p.user_id, { email: data.email, email_confirm: true });
+      if (error) return { ok: false as const, error: "Email already used by another account" };
+    }
+    const { error } = await db.from("profiles").update({ full_name: data.full_name, email: data.email, phone_number: digits(data.phone) }).eq("id", p.id);
+    if (error) return { ok: false as const, error: "Could not save" };
+    return { ok: true as const };
+  });
+
+export const adminResetActivation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ passport_id: passportSchema }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const db = await admin();
+    const { data: p } = await db.from("profiles").select("id, user_id").eq("passport_id", data.passport_id).maybeSingle();
+    if (!p?.user_id) return { ok: false as const, error: "Passport is not activated" };
+    if (p.user_id === context.userId) return { ok: false as const, error: "You cannot reset your own passport" };
+    await db.from("profiles").update({ user_id: null }).eq("id", p.id);
+    await db.auth.admin.deleteUser(p.user_id);
+    return { ok: true as const };
   });
