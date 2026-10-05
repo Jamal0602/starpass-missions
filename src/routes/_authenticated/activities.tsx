@@ -26,6 +26,7 @@ function ActivitiesPage() {
   const { data: me } = useMe();
   const pid = me?.profile?.id;
   const [filter, setFilter] = useState<"all" | "easy" | "medium" | "hard">("all");
+  const [cat, setCat] = useState("Basic");
   const [openId, setOpenId] = useState<string | null>(null);
   const [choice, setChoice] = useState<number | null>(null);
   const [result, setResult] = useState<{ correct: boolean; correct_index: number } | null>(null);
@@ -44,7 +45,8 @@ function ActivitiesPage() {
     },
   });
 
-  const list = useMemo(() => (data?.list ?? []).filter((c) => filter === "all" || c.difficulty === filter), [data, filter]);
+  const list = useMemo(() => (data?.list ?? []).filter((c) => (cat === "All" || c.category === cat) && (filter === "all" || c.difficulty === filter)), [data, filter, cat]);
+  const cats = ["All", ...Array.from(new Set((data?.list ?? []).map((c) => c.category))).sort((a, b) => (a === "Basic" ? -1 : b === "Basic" ? 1 : a.localeCompare(b)))];
   const attempts = new Map((data?.attempts ?? []).map((a) => [a.challenge_id, a]));
   const solved = (data?.attempts ?? []).filter((a) => a.is_correct).length;
   const pts = (data?.attempts ?? []).reduce((s, a) => s + a.points_awarded, 0);
@@ -81,6 +83,12 @@ function ActivitiesPage() {
           <span>Solved <b className="text-primary">{solved}/{data?.list.length ?? 0}</b></span>
           <span>Points <b className="text-primary">{pts}</b></span>
         </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {cats.map((c) => (
+          <button key={c} onClick={() => setCat(c)} className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${cat === c ? "border-primary bg-primary/10 text-primary" : "text-muted-foreground"}`}>{c}</button>
+        ))}
       </div>
 
       <div className="flex gap-1">
