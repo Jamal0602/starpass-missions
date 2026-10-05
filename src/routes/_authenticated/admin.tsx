@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { AdminKeysPanel, AdminChallengePanel } from "@/components/AdminKeysPanel";
+import { AdminPassportPanel } from "@/components/AdminPassportPanel";
+import { LaunchLoader } from "@/components/LaunchLoader";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -28,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 function AdminPage() {
   const { data: me, isLoading } = useMe();
-  if (isLoading) return null;
+  if (isLoading) return <LaunchLoader label="Checking clearance…" />;
   if (!me?.isAdmin)
     return (
       <div className="mx-auto max-w-md rounded-2xl border bg-card p-8 text-center">
@@ -98,6 +100,7 @@ function Console() {
         </div>
       </section>
 
+      <AdminPassportPanel people={people} />
       <AdminKeysPanel />
       <AdminChallengePanel />
       <section className="rounded-2xl border bg-card p-5">

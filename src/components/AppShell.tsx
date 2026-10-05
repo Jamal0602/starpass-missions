@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Rocket, Code2, Home, ClipboardList, Trophy, IdCard, Newspaper, ShieldCheck, LogOut } from "lucide-react";
+import { Rocket, Code2, Home, BookOpen, Trophy, IdCard, Newspaper, ShieldCheck, LogOut } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/use-me";
@@ -8,7 +8,7 @@ import { istNowParts } from "@/lib/mission";
 
 const NAV = [
   { to: "/dashboard", label: "Deck", icon: Home },
-  { to: "/missions", label: "Missions", icon: ClipboardList },
+  { to: "/library", label: "Library", icon: BookOpen },
   { to: "/activities", label: "Arena", icon: Code2 },
   { to: "/leaderboard", label: "Ranks", icon: Trophy },
   { to: "/profile", label: "Passport", icon: IdCard },
