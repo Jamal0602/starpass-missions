@@ -78,12 +78,9 @@ export const registerTrainee = createServerFn({ method: "POST" })
       .maybeSingle();
     if (existing) return { ok: false as const, error: "This email or phone is already enlisted" };
 
-    const { data: created, error } = await db.auth.admin.createUser({
-      email: data.email,
-      password: data.password,
-      email_confirm: true,
-    });
-    if (error || !created.user) return { ok: false as const, error: "Could not create account" };
+    const newUserId = await ensureAuthUser(db, data.email, data.password);
+    if (!newUserId) return { ok: false as const, error: "Could not create account" };
+    const created = { user: { id: newUserId } };
 
     const { data: profile, error: pErr } = await db
       .from("profiles")
