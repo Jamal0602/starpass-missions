@@ -1,10 +1,12 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Rocket, Code2, Home, BookOpen, Trophy, IdCard, Newspaper, ShieldCheck, LogOut } from "lucide-react";
+import { Code2, Home, BookOpen, Trophy, IdCard, Newspaper, ShieldCheck, LogOut } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/use-me";
 import { istNowParts } from "@/lib/mission";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import logo from "@/assets/logo.png";
 
 const NAV = [
   { to: "/dashboard", label: "Deck", icon: Home },
@@ -42,7 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="glass sticky top-0 z-40 hidden border-b md:block">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-6">
           <Link to="/dashboard" className="flex items-center gap-2 font-mono text-sm font-bold tracking-widest">
-            <Rocket className="h-5 w-5 text-primary" /> ASTRAPASS
+            <img src={logo} alt="" width={28} height={28} className="h-7 w-7" /> ASTRAPASS
           </Link>
           <nav className="flex gap-1">
             {[...NAV, { to: "/feed", label: "Feed", icon: Newspaper } as const].map((n) => (
@@ -67,6 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
           <div className="ml-auto flex items-center gap-4">
             <IstClock />
+            <ThemeToggle />
             {me?.profile && <span className="font-mono text-xs text-muted-foreground">{me.profile.passport_id}</span>}
             <button onClick={signOut} className="text-muted-foreground hover:text-foreground" aria-label="Sign out">
               <LogOut className="h-4 w-4" />
@@ -77,10 +80,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex items-center justify-between px-4 py-3 md:hidden">
         <span className="flex items-center gap-2 font-mono text-sm font-bold tracking-widest">
-          <Rocket className="h-4 w-4 text-primary" /> ASTRAPASS
+          <img src={logo} alt="" width={24} height={24} className="h-6 w-6" /> ASTRAPASS
         </span>
         <div className="flex items-center gap-3">
           <IstClock />
+          <ThemeToggle />
           {me?.isAdmin && (
             <Link to="/admin" aria-label="Flight Control" className="text-primary">
               <ShieldCheck className="h-5 w-5" />
