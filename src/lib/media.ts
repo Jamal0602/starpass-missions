@@ -9,7 +9,7 @@ export async function uploadImage(file: File): Promise<string> {
   if (file.size > 5 * 1024 * 1024) throw new Error("Image must be under 5 MB");
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) throw new Error("Sign in first");
-  const ext = file.type.split("/")[1].replace("jpeg", "jpg");
+  const ext = (file.type.split("/")[1] ?? "png").replace("jpeg", "jpg");
   const path = `${u.user.id}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from("media").upload(path, file, { contentType: file.type });
   if (error) throw new Error("Upload failed");
