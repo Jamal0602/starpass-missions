@@ -226,6 +226,48 @@ export type Database = {
         }
         Relationships: []
       }
+      mission_feedback: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          mission_day: number
+          profile_id: string
+          rating: number
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          mission_day: number
+          profile_id: string
+          rating: number
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          mission_day?: number
+          profile_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_feedback_mission_day_fkey"
+            columns: ["mission_day"]
+            isOneToOne: false
+            referencedRelation: "mission_schedules"
+            referencedColumns: ["mission_day"]
+          },
+          {
+            foreignKeyName: "mission_feedback_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mission_schedules: {
         Row: {
           active_date: string
@@ -325,6 +367,7 @@ export type Database = {
           body: string
           created_at: string
           id: string
+          image_url: string | null
           link_url: string | null
           profile_id: string
           title: string
@@ -333,6 +376,7 @@ export type Database = {
           body: string
           created_at?: string
           id?: string
+          image_url?: string | null
           link_url?: string | null
           profile_id: string
           title: string
@@ -341,6 +385,7 @@ export type Database = {
           body?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           link_url?: string | null
           profile_id?: string
           title?: string
@@ -357,54 +402,72 @@ export type Database = {
       }
       profiles: {
         Row: {
+          availability: string | null
           avatar_url: string | null
           bio: string | null
           callsign: string | null
           category: string | null
           created_at: string
+          education: string | null
           email: string
           full_name: string
           github_url: string | null
+          goals: string | null
           id: string
           instagram_url: string | null
+          interests: string[]
           is_pro: boolean
+          languages: string[]
           linkedin_url: string | null
+          location: string | null
           passport_id: string
           phone_number: string
           skills: string[]
           user_id: string | null
         }
         Insert: {
+          availability?: string | null
           avatar_url?: string | null
           bio?: string | null
           callsign?: string | null
           category?: string | null
           created_at?: string
+          education?: string | null
           email: string
           full_name: string
           github_url?: string | null
+          goals?: string | null
           id?: string
           instagram_url?: string | null
+          interests?: string[]
           is_pro?: boolean
+          languages?: string[]
           linkedin_url?: string | null
+          location?: string | null
           passport_id?: string
           phone_number: string
           skills?: string[]
           user_id?: string | null
         }
         Update: {
+          availability?: string | null
           avatar_url?: string | null
           bio?: string | null
           callsign?: string | null
           category?: string | null
           created_at?: string
+          education?: string | null
           email?: string
           full_name?: string
           github_url?: string | null
+          goals?: string | null
           id?: string
           instagram_url?: string | null
+          interests?: string[]
           is_pro?: boolean
+          languages?: string[]
           linkedin_url?: string | null
+          location?: string | null
           passport_id?: string
           phone_number?: string
           skills?: string[]
