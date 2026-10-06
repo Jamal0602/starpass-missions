@@ -9,7 +9,7 @@ export function useMe() {
       const uid = auth.user?.id;
       if (!uid) return null;
       const [{ data: profile }, { data: roles }] = await Promise.all([
-        supabase.from("profiles").select("id, user_id, passport_id, full_name, callsign, avatar_url, bio, is_pro, skills, linkedin_url, github_url, instagram_url, created_at, category").eq("user_id", uid).maybeSingle(),
+        supabase.from("profiles").select("id, user_id, passport_id, full_name, callsign, avatar_url, bio, is_pro, skills, linkedin_url, github_url, instagram_url, created_at, category, interests, languages, location, education, goals, availability").eq("user_id", uid).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", uid),
       ]);
       return { userId: uid, profile, isAdmin: !!roles?.some((r) => r.role === "admin") };
