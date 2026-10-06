@@ -1,5 +1,6 @@
 import { Rocket, Satellite, Orbit, Moon, Telescope, Radar, Sun, Atom, Globe, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMediaUrl } from "@/lib/media";
 
 const ICONS = [Rocket, Satellite, Orbit, Moon, Telescope, Radar, Sun, Atom, Globe, Sparkles];
 
@@ -18,7 +19,8 @@ export function SpaceAvatar({
   url?: string | null;
   className?: string;
 }) {
-  if (url) return <img src={url} alt="" className={cn("rounded-full object-cover", className)} />;
+  const src = useMediaUrl(url);
+  if (src) return <img src={src} loading="lazy" alt="" className={cn("rounded-full object-cover", className)} />;
   const Icon = ICONS[avatarIndex(passportId)] ?? Rocket;
   return (
     <div
