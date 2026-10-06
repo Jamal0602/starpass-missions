@@ -22,6 +22,7 @@ import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/f
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedClaimTokenRouteImport } from './routes/_authenticated/claim/$token'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +90,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedClaimTokenRoute = AuthenticatedClaimTokenRouteImport.update({
   id: '/claim/$token',
   path: '/claim/$token',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/claim/$token': typeof AuthenticatedClaimTokenRoute
 }
 export interface FileRoutesByTo {
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/claim/$token': typeof AuthenticatedClaimTokenRoute
 }
 export interface FileRoutesById {
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/claim/$token': typeof AuthenticatedClaimTokenRoute
 }
 export interface FileRouteTypes {
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/library'
     | '/profile'
+    | '/settings'
     | '/claim/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/library'
     | '/profile'
+    | '/settings'
     | '/claim/$token'
   id:
     | '__root__'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/_authenticated/leaderboard'
     | '/_authenticated/library'
     | '/_authenticated/profile'
+    | '/_authenticated/settings'
     | '/_authenticated/claim/$token'
   fileRoutesById: FileRoutesById
 }
@@ -293,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/claim/$token': {
       id: '/_authenticated/claim/$token'
       path: '/claim/$token'
@@ -311,6 +330,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedClaimTokenRoute: typeof AuthenticatedClaimTokenRoute
 }
 
@@ -322,6 +342,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedClaimTokenRoute: AuthenticatedClaimTokenRoute,
 }
 
