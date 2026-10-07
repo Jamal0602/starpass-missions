@@ -59,7 +59,7 @@ function ProfilePage() {
 
   if (!p) return <div className="text-muted-foreground">Loading passport…</div>;
 
-  const shareUrl = `https://astrapass.cubiz.space/p/${p.passport_id}`;
+  const shareUrl = `https://starpass-missions.lovable.app/p/${p.passport_id}`;
   const stamped = new Set(stamps.map((s) => s.mission_day));
 
   async function save(e: React.FormEvent) {

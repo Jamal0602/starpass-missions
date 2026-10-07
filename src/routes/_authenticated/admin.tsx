@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { AdminKeysPanel, AdminChallengePanel } from "@/components/AdminKeysPanel";
 import { AdminPassportPanel } from "@/components/AdminPassportPanel";
+import { AdminPostersPanel } from "@/components/ActivityPosters";
 import { LaunchLoader } from "@/components/LaunchLoader";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -100,6 +101,7 @@ function Console() {
         </div>
       </section>
 
+      <AdminPostersPanel />
       <AdminPassportPanel people={people} />
       <AdminKeysPanel />
       <AdminChallengePanel />

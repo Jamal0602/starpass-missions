@@ -64,6 +64,13 @@
       "when": 1791274509746,
       "tag": "0008_media_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791371717181,
+      "tag": "0009_activity_posters_open_posts",
+      "breakpoints": true
     }
   ]
 }

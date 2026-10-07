@@ -11,6 +11,7 @@ import { StampTile } from "@/components/StampTile";
 import { AchievementDialog, playStamp } from "@/components/AchievementDialog";
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { ActivityPosters } from "@/components/ActivityPosters";
 import spaceBg from "@/assets/space-bg.jpg";
 import astronaut from "@/assets/astronaut.png";
 
@@ -156,6 +157,8 @@ function Dashboard() {
           )}
         </div>
       </motion.section>
+
+      <ActivityPosters />
 
       {missed.length > 0 && (
         <section className="space-y-2">
