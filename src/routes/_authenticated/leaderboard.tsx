@@ -77,7 +77,7 @@ function LeaderboardPage() {
               <span className="w-6 font-mono text-sm text-muted-foreground">{i + 1}</span>
               <SpaceAvatar passportId={r.p.passport_id} url={r.p.avatar_url} className="h-9 w-9" />
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-semibold">{r.p.callsign || r.p.full_name}</div>
+                <Link to="/p/$passportId" params={{ passportId: r.p.passport_id }} className="block truncate text-sm font-semibold hover:text-primary">{r.p.callsign || r.p.full_name}</Link>
                 <div className="font-mono text-xs text-muted-foreground">{r.p.passport_id}</div>
               </div>
               <span className="font-mono font-bold text-primary">{r.val}</span>
