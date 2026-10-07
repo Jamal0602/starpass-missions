@@ -24,6 +24,7 @@ import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedClaimTokenRouteImport } from './routes/_authenticated/claim/$token'
+import { Route as AuthenticatedPPassportIdRouteImport } from './routes/_authenticated/p/$passportId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -100,6 +101,12 @@ const AuthenticatedClaimTokenRoute = AuthenticatedClaimTokenRouteImport.update({
   path: '/claim/$token',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPPassportIdRoute =
+  AuthenticatedPPassportIdRouteImport.update({
+    id: '/p/$passportId',
+    path: '/p/$passportId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/claim/$token': typeof AuthenticatedClaimTokenRoute
+  '/p/$passportId': typeof AuthenticatedPPassportIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -132,6 +140,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/claim/$token': typeof AuthenticatedClaimTokenRoute
+  '/p/$passportId': typeof AuthenticatedPPassportIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -150,6 +159,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/claim/$token': typeof AuthenticatedClaimTokenRoute
+  '/_authenticated/p/$passportId': typeof AuthenticatedPPassportIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/claim/$token'
+    | '/p/$passportId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/claim/$token'
+    | '/p/$passportId'
   id:
     | '__root__'
     | '/'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/_authenticated/claim/$token'
+    | '/_authenticated/p/$passportId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClaimTokenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/p/$passportId': {
+      id: '/_authenticated/p/$passportId'
+      path: '/p/$passportId'
+      fullPath: '/p/$passportId'
+      preLoaderRoute: typeof AuthenticatedPPassportIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -332,6 +352,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedClaimTokenRoute: typeof AuthenticatedClaimTokenRoute
+  AuthenticatedPPassportIdRoute: typeof AuthenticatedPPassportIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -344,6 +365,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedClaimTokenRoute: AuthenticatedClaimTokenRoute,
+  AuthenticatedPPassportIdRoute: AuthenticatedPPassportIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
