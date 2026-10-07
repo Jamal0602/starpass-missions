@@ -18,7 +18,7 @@ export async function uploadImage(file: File): Promise<string> {
 
 /** Resolves a stored media path (or plain https URL) into a viewable URL. */
 export function useMediaUrl(path: string | null | undefined) {
-  const isPath = !!path && !/^https?:\/\//.test(path);
+  const isPath = !!path && !/^(https?:\/\/|\/)/.test(path);
   const q = useQuery({
     queryKey: ["media", path],
     enabled: isPath,
